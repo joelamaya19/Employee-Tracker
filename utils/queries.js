@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const db = require('../db/db.js');
+const { type } = require('os');
 
 
 const SQL_QUERIES = {
@@ -137,6 +138,38 @@ const addEmployee = async () => {
 
     await db.query(SQL_QUERIES.addEmployee, [first_name, last_name, role_id, manager_id]);
     console.log('Employee added');
+}
+
+const updateEmployeeRole = async () => {
+    const employee = await db.query('SELECT * FROM employee');
+    const employeeChoices = employee.rows.map(employee => ({
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id
+    }));
+
+    const roles = await db.query('SELECT * FROM role');
+    const roleChoices = roles.rows.map(role => ({
+        name: role.title,
+        value: role.id
+    }));
+
+    const { employeeId, roleId } = await inquirer.prompt([
+        {
+            name: 'employeeId',
+            type: 'list',
+            message: 'Select the employee you want to update:',
+            choices: employeeChoices
+        },
+        {
+            name: 'roleId',
+            type: 'list',
+            message: 'Select the new role for the employee:',
+            choices: roleChoices
+        }
+    ]);
+
+    await db.query(SQL_QUERIES.updateEmployeeRole, [roleId, employeeId]);
+    console.log('Employee Role Updated');
 }
 
 module.exports = {
