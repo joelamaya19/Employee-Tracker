@@ -56,5 +56,3 @@ const promptMainMenu = async () => {
 }
 
 start();
-
-module.exports = promptMainMenu;
