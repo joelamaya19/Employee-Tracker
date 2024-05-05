@@ -1,4 +1,6 @@
+const inquirer = require('inquirer');
 const db = require('../db/db.js');
+
 
 const SQL_QUERIES = {
     viewAllDepartments: 'SELECT * FROM department',
@@ -25,12 +27,124 @@ const viewAllEmployees = async () => {
     console.table(result.rows);
 }
 
+// Validation functions
+const validateName = async (input) => {
+    if (!input) {
+        return 'Name cannot be empty.';
+    }
+    return true;
+};
+
+const validateSalary = async (input) => {
+    if (isNaN(input) || parseFloat(input) <= 0) {
+        return 'Salary must be a positive number.';
+    }
+    return true;
+};
+
+const validateDepartmentId = async (input) => {
+    const departments = await db.query('SELECT * FROM department');
+    const departmentIds = departments.rows.map(department => department.id.toString());
+    if (!departmentIds.includes(input)) {
+        return 'Invalid department ID.';
+    }
+    return true;
+};
+
+const addDepartment = async () => {
+    const { name } = await inquirer.prompt({
+        name: 'name',
+        type: 'input',
+        message: 'Enter the name of the department:',
+        validate: validateName
+    });
+
+    await db.query(SQL_QUERIES.addDepartment, [name]);
+    console.log('Department added');
+}
+
+const addRole = async () => {
+    const { title, salary, department_id } = await inquirer.prompt([
+        {
+            name: 'title',
+            type: 'input',
+            message: 'Enter the title of the role:',
+            validate: validateName
+        },
+        {
+            name: 'salary',
+            type: 'input',
+            message: 'Enter the salary for this role:',
+            validate: validateSalary
+        },
+        {
+            name: 'department_id',
+            type: 'input',
+            message: 'Enter the department ID for this role:',
+            validate: validateDepartmentId
+        }
+    ])
+}
+
+const addEmployee = async () => {
+    const { first_name, last_name, role_id, manager_id } = await inquirer.prompt([
+        {
+            name: 'first_name',
+            type: 'input',
+            message: 'Enter the employee\'s first name:',
+            validate: validateName
+        },
+        {
+            name: 'last_name',
+            type: 'input',
+            message: 'Enter the employee\'s last name:',
+            validate: validateName
+        },
+        {
+            name: 'role_id',
+            type: 'input',
+            message: 'Enter the role ID for this employee:',
+            validate: async (input) => {
+                const roles = await db.query('SELECT * FROM role');
+                const roleIds = roles.rows.map(role => role.id.toString());
+
+                if (!roleIds.includes(input)) {
+                    return 'Invalid role ID';
+                }
+                return true;
+            }
+        },
+        {
+            name: 'manager_id',
+            type: 'input',
+            message: 'Enter the manager ID for this employee (leave blank if none):',
+            validate: async (input) => {
+                
+                if(input === '') {
+                    return true; // Allow empty manager_id
+                }
+
+                const employee = await db.query('SELECT * FROM employee');
+                const employeeIds = employee.rows.map(employee => employee.id.toString());
+
+                if (!employeeIds.includes(input)) {
+                    return 'Invalid manager ID';
+                }
+                return true;
+            }
+        },
+    ]);
+
+    await db.query(SQL_QUERIES.addEmployee, [first_name, last_name, role_id, manager_id]);
+    console.log('Employee added');
+}
+
 module.exports = {
     viewAllDepartments,
     viewAllRoles,
     viewAllEmployees,
     addDepartment,
-    addRole, 
-    addEmployee, 
+    addRole,
+    addEmployee,
     updateEmployeeRole,
 };
