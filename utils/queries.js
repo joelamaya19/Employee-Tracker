@@ -60,8 +60,6 @@ const addDepartment = async () => {
 
     await db.query(SQL_QUERIES.addDepartment, [name]);
     console.log('Department added');
-
-    await promptMainMenu();
 }
 
 const addRole = async () => {
