@@ -14,7 +14,7 @@ const mainMenuOptions = [
 
 const start = async () => {
     console.log('Welcome to the Employee-Tracker System');
-    await promptMainMenu;
+    await promptMainMenu();
 }
 
 const promptMainMenu = async () => {
@@ -54,3 +54,5 @@ const promptMainMenu = async () => {
 }
 
 start();
+
+module.exports = { promptMainMenu };
