@@ -21,8 +21,8 @@ Employee Tracker System is a command-line application built with Node.js and Pos
 4. Follow the prompts to perform various actions such as viewing data, adding departments, roles, or employees, and updating employee roles.
 
 ## Walkthrough Video
+[Link to Walkthrough Video](https://drive.google.com/file/d/1CfdyNsNR-rPHMuTGwocaDwmHj_JHAwxo/preview)
 
-![coming soon]
 
 ## License
 
