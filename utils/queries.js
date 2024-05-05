@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const db = require('../db/db.js');
 
+// SQL queries for various operations
 const SQL_QUERIES = {
     viewAllDepartments: 'SELECT * FROM department',
     viewAllRoles: 'SELECT * FROM role',
@@ -11,31 +12,35 @@ const SQL_QUERIES = {
     updateEmployeeRole: 'UPDATE employee SET role_id = $1 WHERE id = $2'
 };
 
+// Function to view all departments
 const viewAllDepartments = async () => {
-    const result = await db.query(SQL_QUERIES.viewAllDepartments);
-    console.table(result.rows);
+    const result = await db.query(SQL_QUERIES.viewAllDepartments); // Executes query
+    console.table(result.rows); // Display results in tabular format
 }
 
+// Function to view all roles
 const viewAllRoles = async () => {
     const result = await db.query(SQL_QUERIES.viewAllRoles);
     console.table(result.rows);
 }
 
+// Function to view all the employees
 const viewAllEmployees = async () => {
     const result = await db.query(SQL_QUERIES.viewAllEmployees);
     console.table(result.rows);
 }
 
-// function to get department choices
+// Function to get department choices
 const getDepartmentChoices = async () => {
     const departments = await db.query('SELECT * FROM department');
+    // Map department data to required format
     return departments.rows.map(department => ({
         name: department.name,
         value: department.id
     }));
 };
 
-// function to get employee choices
+// Function to get employee choices
 const getEmployeeChoices = async () => {
     const employees = await db.query('SELECT * FROM employee');
     const choices = employees.rows.map(employee => ({
@@ -79,18 +84,20 @@ const validateDepartmentId = async (input) => {
     return true;
 };
 
+// Function to add a department
 const addDepartment = async () => {
-    const { name } = await inquirer.prompt({
+    const { name } = await inquirer.prompt({  // Prompt 
         name: 'name',
         type: 'input',
         message: 'Enter the name of the department:',
-        validate: validateName
+        validate: validateName // Validate name
     });
 
     await db.query(SQL_QUERIES.addDepartment, [name]);
     console.log('Department added');
 }
 
+// Function to add a role
 const addRole = async () => {
     const { title, salary, department_id } = await inquirer.prompt([
         {
@@ -103,14 +110,14 @@ const addRole = async () => {
             name: 'salary',
             type: 'input',
             message: 'Enter the salary for this role:',
-            validate: validateSalary
+            validate: validateSalary // Validate salary
         },
         {
             name: 'department_id',
             type: 'list',
             message: 'Which department does the role belong to?',
-            choices: await getDepartmentChoices(),
-            validate: validateDepartmentId
+            choices: await getDepartmentChoices(), // Get department choices
+            validate: validateDepartmentId // Validate department ID
         }
     ]);
 
@@ -118,6 +125,7 @@ const addRole = async () => {
     console.log('Role added');
 }
 
+// Function to add an employee
 const addEmployee = async () => {
     const { first_name, last_name, role_id, manager_id } = await inquirer.prompt([
         {
@@ -136,7 +144,7 @@ const addEmployee = async () => {
             name: 'role_id',
             type: 'list',
             message: 'What is the employee\'s role?',
-            choices: await getRoleChoices(),
+            choices: await getRoleChoices(), // Get role choices
             validate: async (input) => {
                 const roles = await db.query('SELECT * FROM role');
                 const roleIds = roles.rows.map(role => role.id.toString());
@@ -151,7 +159,7 @@ const addEmployee = async () => {
             name: 'manager_id',
             type: 'list',
             message: 'Who is the employee\'s manager? (leave blank if none)',
-            choices: await getEmployeeChoices(),
+            choices: await getEmployeeChoices(), // Get employee choices
             validate: async (input) => {
                 
                 if(input === '') {
@@ -173,6 +181,7 @@ const addEmployee = async () => {
     console.log('Employee added');
 }
 
+// Function to update employee role
 const updateEmployeeRole = async () => {
     const employee = await db.query('SELECT * FROM employee');
     const employeeChoices = employee.rows.map(employee => ({
@@ -191,13 +200,13 @@ const updateEmployeeRole = async () => {
             name: 'employeeId',
             type: 'list',
             message: 'Select the employee you want to update:',
-            choices: employeeChoices
+            choices: employeeChoices // Employee choices
         },
         {
             name: 'roleId',
             type: 'list',
             message: 'Select the new role for the employee:',
-            choices: roleChoices
+            choices: roleChoices // Role choices
         }
     ]);
 
@@ -205,6 +214,7 @@ const updateEmployeeRole = async () => {
     console.log('Employee Role Updated');
 }
 
+// Export all functions
 module.exports = {
     viewAllDepartments,
     viewAllRoles,
