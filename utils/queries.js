@@ -26,6 +26,35 @@ const viewAllEmployees = async () => {
     console.table(result.rows);
 }
 
+// function to get department choices
+const getDepartmentChoices = async () => {
+    const departments = await db.query('SELECT * FROM department');
+    return departments.rows.map(department => ({
+        name: department.name,
+        value: department.id
+    }));
+};
+
+// function to get employee choices
+const getEmployeeChoices = async () => {
+    const employees = await db.query('SELECT * FROM employee');
+    const choices = employees.rows.map(employee => ({
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id
+    }));
+    choices.unshift({ name: 'None', value: null }); // Add "None" option at the beginning
+    return choices;
+};
+
+// function to get role choices
+const getRoleChoices = async () => {
+    const roles = await db.query('SELECT * FROM role');
+    return roles.rows.map(role => ({
+        name: role.title,
+        value: role.id
+    }));
+};
+
 // Validation functions
 const validateName = async (input) => {
     if (!input) {
@@ -78,8 +107,9 @@ const addRole = async () => {
         },
         {
             name: 'department_id',
-            type: 'input',
-            message: 'Enter the department ID for this role:',
+            type: 'list',
+            message: 'Which department does the role belong to?',
+            choices: await getDepartmentChoices(),
             validate: validateDepartmentId
         }
     ]);
@@ -104,8 +134,9 @@ const addEmployee = async () => {
         },
         {
             name: 'role_id',
-            type: 'input',
-            message: 'Enter the role ID for this employee:',
+            type: 'list',
+            message: 'What is the employee\'s role?',
+            choices: await getRoleChoices(),
             validate: async (input) => {
                 const roles = await db.query('SELECT * FROM role');
                 const roleIds = roles.rows.map(role => role.id.toString());
@@ -118,8 +149,9 @@ const addEmployee = async () => {
         },
         {
             name: 'manager_id',
-            type: 'input',
-            message: 'Enter the manager ID for this employee (leave blank if none):',
+            type: 'list',
+            message: 'Who is the employee\'s manager? (leave blank if none)',
+            choices: await getEmployeeChoices(),
             validate: async (input) => {
                 
                 if(input === '') {
