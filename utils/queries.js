@@ -1,7 +1,5 @@
 const inquirer = require('inquirer');
 const db = require('../db/db.js');
-const { promptMainMenu } = require('../index.js');
-
 
 const SQL_QUERIES = {
     viewAllDepartments: 'SELECT * FROM department',
@@ -16,22 +14,16 @@ const SQL_QUERIES = {
 const viewAllDepartments = async () => {
     const result = await db.query(SQL_QUERIES.viewAllDepartments);
     console.table(result.rows);
-
-    await promptMainMenu();
 }
 
 const viewAllRoles = async () => {
     const result = await db.query(SQL_QUERIES.viewAllRoles);
     console.table(result.rows);
-
-    await promptMainMenu();
 }
 
 const viewAllEmployees = async () => {
     const result = await db.query(SQL_QUERIES.viewAllEmployees);
     console.table(result.rows);
-
-    await promptMainMenu();
 }
 
 // Validation functions
@@ -96,8 +88,6 @@ const addRole = async () => {
 
     await db.query(SQL_QUERIES.addRole, [title, salary, department_id]);
     console.log('Role added');
-
-    await promptMainMenu();
 }
 
 const addEmployee = async () => {
@@ -151,8 +141,6 @@ const addEmployee = async () => {
 
     await db.query(SQL_QUERIES.addEmployee, [first_name, last_name, role_id, manager_id]);
     console.log('Employee added');
-
-    await promptMainMenu();
 }
 
 const updateEmployeeRole = async () => {
@@ -185,8 +173,6 @@ const updateEmployeeRole = async () => {
 
     await db.query(SQL_QUERIES.updateEmployeeRole, [roleId, employeeId]);
     console.log('Employee Role Updated');
-
-    await promptMainMenu();
 }
 
 module.exports = {

@@ -51,8 +51,10 @@ const promptMainMenu = async () => {
             console.log('Have a nice day! Goodbye');
             process.exit(0);
     }
+
+    await promptMainMenu();
 }
 
 start();
 
-module.exports = { promptMainMenu };
+module.exports = promptMainMenu;
