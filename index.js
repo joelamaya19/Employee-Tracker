@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const { viewAllDepartments, viewAllRoles, viewAllEmployees, addDepartment, addRole, addEmployee, updateEmployeeRole } = require('./utils/queries');
 
+// Array containing options for the main menu
 const mainMenuOptions = [
     'View All Departments',
     'View All Roles',
@@ -12,12 +13,17 @@ const mainMenuOptions = [
     'Exit'
 ];
 
+// Function to start the application
 const start = async () => {
     console.log('Welcome to the Employee-Tracker System');
+
+    // Call the function to prompt the main menu
     await promptMainMenu();
 }
 
+// Function to prompt the main menu
 const promptMainMenu = async () => {
+    // Prompt the user to choose an option from the main menu
     const { choice } = await inquirer.prompt({
         name: 'choice',
         type: 'list',
@@ -25,6 +31,7 @@ const promptMainMenu = async () => {
         choices: mainMenuOptions
     });
 
+    // Switch statement to handle user's choice
     switch (choice) {
         case 'View All Departments':
             await viewAllDepartments();
@@ -49,10 +56,13 @@ const promptMainMenu = async () => {
             break;
         case 'Exit':
             console.log('Have a nice day! Goodbye');
+            // Exit the process with the status code 0
             process.exit(0);
     }
 
+    // // Call the main menu again for continuous operation
     await promptMainMenu();
 }
 
+// Start the application
 start();
